@@ -35,8 +35,8 @@
 
 
 	myObj2.on('evt2', function () {
-		outputFn('myObj2, evt2 - 1', JSON.stringify(toArray(arguments)), this.constructor.name);
-		console.log('myObj2, evt2 - 1', arguments, this);
+		outputFn('myObj2 - 1, evt2', JSON.stringify(toArray(arguments)), this.constructor.name);
+		console.log('myObj2 - 1, evt2', arguments, this);
 	});
 
 	myObj2.on('evt2', function () {
