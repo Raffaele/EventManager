@@ -1,0 +1,23 @@
+{
+  "name": "EventManager",
+  "version": "1.0.0",
+  "description": "A simple but complete event manager for javascript, it include also an angular version",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Raffaele/EventManager"
+  },
+  "keywords": [
+    "EventManager",
+    "Angular"
+  ],
+  "author": "Raffaele Mori",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Raffaele/EventManager/issues"
+  },
+  "homepage": "https://github.com/Raffaele/EventManager"
+}

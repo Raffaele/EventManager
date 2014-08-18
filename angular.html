@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EVENT MANAGER ANGULAR TEST</title>
+    
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
+    <script src="angular-js/EventManager.js"></script>
+    <script>
+    	var myModule = angular.module('myTest', ['EventManager']);
+    	
+    	myModule.service('EvtService', function(EventManager){
+    		return EventManager.create();
+    	});
+
+    	myModule.controller('myController1', function ($scope, EvtService) {
+    		$scope.eventIteration = 0;
+    		EvtService.on('evt1', function () {
+    			$scope.eventIteration++;
+    		});
+    	});
+
+    	myModule.controller('myController2', function ($scope, EvtService) {
+    		EvtService.on('evt1', function () {
+    			console.log('hello');
+    		});
+    		$scope.fireClickEvent = function () {
+    			EvtService.trigger('evt1');
+    		};
+    	});
+
+    </script>
+  </head>
+  <body ng-app="myTest">
+    <div ng-controller="myController1">
+    	{{eventIteration}}
+    </div>
+
+    <div ng-controller="myController2">
+    	<button ng-click="fireClickEvent()">INCREMENT</button>
+    </div>
+  </body>
+</html>
