@@ -20,83 +20,95 @@
  * @Author Ing. Raffaele Morì
  */
 
+(function () {
+  function EventManager () {
+    var eventManagerPrototype,
+      genericContext,
+      ngEventManager;
 
-function EventManager () {
-  var eventManagerPrototype,
-    genericContext;
+    function getManagerPrototype (mainObj) {
 
-  function getManagerPrototype (mainObj) {
-
-    var prototype = {
-      on: function on (eventName, callbackFn, context) {
-        if (!mainObj.eventList[eventName]) {
-          mainObj.eventList[eventName] = [];
-        }
-        mainObj.eventList[eventName].push({
-          callback: callbackFn, 
-          context: context || mainObj
-        });
-
-        return mainObj;
-      },
-      off: function off (eventName, callbackFn) {
-        var listenerList = mainObj.eventList[eventName],
-          listenerLength,
-          listenerIndex;
-
-        if (listenerList) {
-          if (!callbackFn) {
+      var prototype = {
+        on: function on (eventName, callbackFn, context) {
+          if (!mainObj.eventList[eventName]) {
             mainObj.eventList[eventName] = [];
-          } else {
-            listenerLength = listenerList.length;
-            for (listenerIndex = 0; listenerIndex < listenerLength; listenerIndex++) {
-              if (listenerList[listenerIndex].callback == callbackFn) {
-                listenerList.splice(listenerIndex, 1);
-                break;
+          }
+          mainObj.eventList[eventName].push({
+            callback: callbackFn, 
+            context: context || mainObj
+          });
+
+          return mainObj;
+        },
+        off: function off (eventName, callbackFn) {
+          var listenerList = mainObj.eventList[eventName],
+            listenerLength,
+            listenerIndex;
+
+          if (listenerList) {
+            if (!callbackFn) {
+              mainObj.eventList[eventName] = [];
+            } else {
+              listenerLength = listenerList.length;
+              for (listenerIndex = 0; listenerIndex < listenerLength; listenerIndex++) {
+                if (listenerList[listenerIndex].callback == callbackFn) {
+                  listenerList.splice(listenerIndex, 1);
+                  break;
+                }
               }
             }
           }
-        }
 
-        return mainObj;
-      },
-      trigger: function trigger (eventName) {
-        var listenerList = mainObj.eventList[eventName],
-          listenerLength,
-          listenerIndex,
-          eventObj,
-          purgedArgumentList;
+          return mainObj;
+        },
+        trigger: function trigger (eventName) {
+          var listenerList = mainObj.eventList[eventName],
+            listenerLength,
+            listenerIndex,
+            eventObj,
+            purgedArgumentList;
 
-        if (listenerList) {
-          purgedArgumentList = [].slice.call(arguments, 1);
-          listenerLength = listenerList.length;
-          for (listenerIndex = 0; listenerIndex < listenerLength; listenerIndex++) {
-            eventObj = listenerList[listenerIndex];
-            eventObj.callback.apply(eventObj.context, purgedArgumentList);
+          if (listenerList) {
+            purgedArgumentList = [].slice.call(arguments, 1);
+            listenerLength = listenerList.length;
+            for (listenerIndex = 0; listenerIndex < listenerLength; listenerIndex++) {
+              eventObj = listenerList[listenerIndex];
+              eventObj.callback.apply(eventObj.context, purgedArgumentList);
+            }
           }
-        }
 
-        return mainObj;
-      },
-      eventList: {}
-    };
+          return mainObj;
+        },
+        eventList: {}
+      };
 
-    cloneAttributes (mainObj, prototype);
-  }
+      cloneAttributes (mainObj, prototype);
+    }
 
-  function cloneAttributes (destination, source) {
-    for (var key in source) {
-       (source.hasOwnProperty(key)) &&
-            (destination[key] = source[key]);
+    function cloneAttributes (destination, source) {
+      for (var key in source) {
+         (source.hasOwnProperty(key)) &&
+              (destination[key] = source[key]);
+      }
+    }
+
+
+    if (this.constructor == arguments.callee) {
+      getManagerPrototype(this);
+    } else {
+      genericContext = arguments[0] || {};
+      getManagerPrototype(genericContext);
+      return genericContext;
     }
   }
 
 
-  if (this.constructor == arguments.callee) {
-    getManagerPrototype(this);
-  } else {
-    genericContext = arguments[0] || {};
-    getManagerPrototype(genericContext);
-    return genericContext;
+  if (typeof(angular)!='undefined' && angular.module) { // Angular module
+    ngEventManager = angular.module('EventManager', []);
+    ngEventManager.service('EventManager', function () {
+      return EventManager;
+    });
+  } else { // Native js module
+    window.EventManager = EventManager;
   }
-}
+} ());

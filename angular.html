@@ -2,41 +2,92 @@
 <html>
   <head>
     <title>EVENT MANAGER ANGULAR TEST</title>
+
+    <style>
+        td {
+            border: 1px black solid;
+            text-align: center;
+        }
+    </style>
     
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
-    <script src="angular-js/EventManager.js"></script>
+    <script src="js/EventManager.js"></script>
     <script>
-    	var myModule = angular.module('myTest', ['EventManager']);
-    	
-    	myModule.service('EvtService', function(EventManager){
-    		return EventManager.create();
-    	});
+        var myModule = angular.module('myTest', ['EventManager']);
+        
+        //Services that implements the EventManager
+        myModule.service('EvtService1', function(EventManager){
+            return new EventManager();
+        });
+        myModule.service('EvtService2', function(EventManager){
+            return new EventManager();
+        });
 
-    	myModule.controller('myController1', function ($scope, EvtService) {
-    		$scope.eventIteration = 0;
-    		EvtService.on('evt1', function () {
-    			$scope.eventIteration++;
-    		});
-    	});
+        myModule.controller('myController1', function ($scope, EvtService1, EvtService2) {
+            $scope.eventIteration1 = 0;
+            $scope.eventIteration2 = 0;
+            $scope.eventIteration3 = 0;
 
-    	myModule.controller('myController2', function ($scope, EvtService) {
-    		EvtService.on('evt1', function () {
-    			console.log('hello');
-    		});
-    		$scope.fireClickEvent = function () {
-    			EvtService.trigger('evt1');
-    		};
-    	});
+            EvtService1.on('evt', function () {
+                $scope.eventIteration1++;
+            });
+            EvtService2.on('evt', function () {
+                $scope.eventIteration2++;
+            });
+            EvtService2.on('evt2', function () {
+                $scope.eventIteration3++;
+            });
+        });
+
+        myModule.controller('myController2', function ($scope, EvtService1, EvtService2) {
+            EvtService1.on('evt', function () {
+                console.log('hello 1');
+            });
+            $scope.fireClickEvent1 = function () {
+                EvtService1.trigger('evt');
+            };
+
+            EvtService2.on('evt', function () {
+                console.log('hello 2');
+            });
+            $scope.fireClickEvent2 = function () {
+                EvtService2.trigger('evt');
+            };
+
+            EvtService2.on('evt2', function () {
+                console.log('hello 3');
+            });
+            $scope.fireClickEvent3 = function () {
+                EvtService2.trigger('evt2');
+            };
+        });
 
     </script>
   </head>
   <body ng-app="myTest">
-    <div ng-controller="myController1">
-    	{{eventIteration}}
-    </div>
-
-    <div ng-controller="myController2">
-    	<button ng-click="fireClickEvent()">INCREMENT</button>
-    </div>
+    <table stryle="text-align: center;">
+        <tr ng-controller="myController2">
+            <td>
+                <button ng-click="fireClickEvent1()">CLICK</button>
+            </td>
+            <td>
+                <button ng-click="fireClickEvent2()">CLICK</button>
+            </td>
+            <td>
+                <button ng-click="fireClickEvent3()">CLICK</button>
+            </td>
+        </tr>
+        <tr ng-controller="myController1">
+            <td>
+                {{eventIteration1}}
+            </td>
+            <td>
+                {{eventIteration2}}
+            </td>
+            <td>
+                {{eventIteration3}}
+            </td>
+        </tr>
+    </table>
   </body>
 </html>
