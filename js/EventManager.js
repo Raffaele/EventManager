@@ -26,19 +26,27 @@
       genericContext,
       ngEventManager;
 
+    function appendEventListener (mainObj, eventName, callbackFn, context, unique) {
+      if (!mainObj.eventList[eventName]) {
+          mainObj.eventList[eventName] = [];
+        }
+        mainObj.eventList[eventName].push({
+          callback: callbackFn, 
+          context: context || mainObj,
+          unique: unique
+        });
+
+        return mainObj;
+    }
+
     function getManagerPrototype (mainObj) {
 
       var prototype = {
         on: function on (eventName, callbackFn, context) {
-          if (!mainObj.eventList[eventName]) {
-            mainObj.eventList[eventName] = [];
-          }
-          mainObj.eventList[eventName].push({
-            callback: callbackFn, 
-            context: context || mainObj
-          });
-
-          return mainObj;
+          return appendEventListener (mainObj, eventName, callbackFn, context, false);
+        },
+        once: function once (eventName, callbackFn, context) {
+          return appendEventListener (mainObj, eventName, callbackFn, context, true);
         },
         off: function off (eventName, callbackFn) {
           var listenerList = mainObj.eventList[eventName],
@@ -66,7 +74,9 @@
             listenerLength,
             listenerIndex,
             eventObj,
-            purgedArgumentList;
+            purgedArgumentList,
+            deleteIndexList = [],
+            deleterIndex;
 
           if (listenerList) {
             purgedArgumentList = [].slice.call(arguments, 1);
@@ -74,6 +84,11 @@
             for (listenerIndex = 0; listenerIndex < listenerLength; listenerIndex++) {
               eventObj = listenerList[listenerIndex];
               eventObj.callback.apply(eventObj.context, purgedArgumentList);
+              eventObj.unique && (deleteIndexList.push(listenerIndex));
+            }
+
+            for (deleterIndex = deleteIndexList.length - 1; deleterIndex >= 0; deleterIndex--) {
+              listenerList.splice(deleteIndexList[deleterIndex], 1);
             }
           }
 

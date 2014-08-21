@@ -41,30 +41,34 @@
 
         myModule.controller('myController2', function ($scope, EvtService1, EvtService2) {
             EvtService1.on('evt', function () {
-                console.log('hello 1');
+                console.log('hello 1', this);
             });
             $scope.fireClickEvent1 = function () {
                 EvtService1.trigger('evt');
             };
 
-            EvtService2.on('evt', function () {
-                console.log('hello 2');
+            EvtService2.on('evt', function (attr1, attr2) {
+                console.log('hello 2', attr1, attr2);
             });
             $scope.fireClickEvent2 = function () {
-                EvtService2.trigger('evt');
+                EvtService2.trigger('evt', {myVar:'par1'}, {myVar:'par2'});
             };
 
             EvtService2.on('evt2', function () {
-                console.log('hello 3');
+                console.log('hello 3', this);
+            }, {myVar:'context'});
+            EvtService2.once('evt2', function () {
+                alert('JUST ONCE');
             });
             $scope.fireClickEvent3 = function () {
-                EvtService2.trigger('evt2');
+                EvtService2.trigger('evt2', this);
             };
         });
 
     </script>
   </head>
   <body ng-app="myTest">
+    <h1>Look in the javascript console to see the real effects of the events.</h1>
     <table stryle="text-align: center;">
         <tr ng-controller="myController2">
             <td>
